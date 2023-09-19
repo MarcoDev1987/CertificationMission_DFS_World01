@@ -1,5 +1,7 @@
 
 import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 
 
@@ -7,34 +9,76 @@ class TkUsuario:
     def __init__(self, win, controller):
         controller.loader
         self.objBD = controller.BdU
+        self.objBD.CriarTabelas()
+        self.objBD2 = controller.BdUP
+        self.objBD2.CriarTabelas()
+        
         #componentes
         self.lbCodigo=tk.Label(win, text='CPF(Pk):')
-        self.lblNome=tk.Label(win, text='Nome do Funcionário')
-        self.lblCodigo=tk.Label(win, text='Código do Sistema')
-        self.lblPreco=tk.Label(win, text='Função:')
+        self.lblNome=tk.Label(win, text='Nome do Funcionário:')
+        self.lblCodigo=tk.Label(win, text='Código do Sistema:')
+        self.lblPerfil=tk.Label(win, text='Função:')
 
-        self.txtCodigo=tk.Entry(win,)
-        self.txtNome=tk.Entry(win,)
-        self.txtCodigo2=tk.Entry(win,)
+        
+
+
+        
+
+
+        def on_write(*args):
+          s = var.get()
+          if len(s) > 0:
+              if not s[-1].isdigit(): # retirar ultimo caracter caso nao seja digito
+                  var.set(s[:-1])
+              else: # aproveitar apenas os primeiros 5 chars
+                  var.set(s[:11])
+
+        def on_write3(*args):
+          s = var.get()
+          if len(s) > 0:
+              if not s[-1].isdigit(): # retirar ultimo caracter caso nao seja digito
+                  var.set(s[:-1])
+              else: # aproveitar apenas os primeiros 5 chars
+                  var.set(s[:3])
+        
+        
+        var = StringVar()
+        var.trace("w", on_write) # rastrear valor da variavel e executar funcao de validacao quando mudar
+
+        
+        var2 = StringVar()
+        var2.trace("w", on_write3) # rastrear valor da variavel e executar funcao de validacao quando mudar
+
+
+        self.txtCodigo=tk.Entry(win, textvariable=var)
+        
+        self.txtNome=tk.Entry(win, )
+        self.txtCodigo2=tk.Entry(win, textvariable=var2)
         self.txtPreco=tk.Entry(win,)
+        self.txtPerfil=tk.Entry(win,)
         
 
         self.btnCadastrar=tk.Button(win, text='Cadastrar Usuário', command=self.fCadastrarProduto)        
         self.btnAtualizar=tk.Button(win, text='Atualizar', command=self.fAtualizarProduto)        
-        self.btnExcluir=tk.Button(win, text='Excluir', command=self.fExcluirProduto)        
+        self.btnExcluir=tk.Button(win, text='Excluir', command=self.fExcluirUsuario)        
         self.btnLimpar=tk.Button(win, text='Limpar', command=self.fLimparTela)  
 
-        
-        
+        self.btnCadastrarPS=tk.Button(win, text='Cadastrar Perfil/Sistema', command=self.fCadastrarPerfil)
+        self.btnExcluirPS=tk.Button(win, text='Excluir Perfil/Sistema', command=self.fExcluirPerfil)
         
 
 
 
         #----- Componente TreeView --------------------------------------------
         
-        self.dadosColunas = ("", "CPF(Pk)", "Nome do Usuário")            
+        self.dadosColunas = ("", "CPF", "Nome do Usuário")       
+        self.dadosColunas2 = ("", "Codigo do Sistema", "Perfil")       
                 
         self.treeProdutos = ttk.Treeview(win, height= 4, 
+                                       columns=self.dadosColunas,
+                                       selectmode='browse')
+        
+        self.treePerfil = ttk.Treeview(win, height= 4, 
                                        columns=self.dadosColunas,
                                        selectmode='browse')
         
@@ -68,7 +112,7 @@ class TkUsuario:
         self.treePerfil.column("#2", width=150)
 
         self.treePerfil.bind("<<TreeviewSelect>>",
-                               self.apresentarRegistrosSelecionados)
+                               self.apresentarRegistrosSelecionados2)
 
         self.treePerfil.place(relx = 0.57 , rely = 0.1, relwidth= 0.45, relheight= 0.45)
         
@@ -88,14 +132,21 @@ class TkUsuario:
         
         self.lblNome.place( x=20, y=375)
         self.txtNome.place( x=145, y=375 , relwidth= 0.32)
+
+        self.lblCodigo.place( relx=0.65, y=325)
+        self.txtCodigo2.place( relx= 0.65, y=346 , relwidth= 0.3)
         
-        # self.lblPreco.place( x=50, y=425)
-        # self.txtPreco.place(x=250, y=425, relwidth= 0.50, relheight= 0.05)
+        
+        self.lblPerfil.place( relx=0.65, y=377)
+        self.txtPerfil.place(relx= 0.65, y=396 , relwidth= 0.34)
                
         self.btnCadastrar.place( x=20, y=450)
         self.btnAtualizar.place( x=130, y=450)
         self.btnExcluir.place( x=200, y=450)
         self.btnLimpar.place( x=260, y=450)
+
+        self.btnCadastrarPS.place(relx= 0.60, y=450)
+        self.btnExcluirPS.place(relx= 0.82, y=450)
     
 
     # Cadastro de Perfil/Sistema :
@@ -105,15 +156,80 @@ class TkUsuario:
 
            
         self.carregarDadosIniciais()
+        
 #-----------------------------------------------------------------------------
     def apresentarRegistrosSelecionados(self, event):  
         self.fLimparTela()  
         for selection in self.treeProdutos.selection():  
             item = self.treeProdutos.item(selection)  
-            Cpf, Nome = item["values"][0:3]  
-            self.txtCodigo.insert(0, Cpf)  
-            self.txtNome.insert(0, Nome)  
-              
+            
+            cpf, Nome = item["values"][0:2]
+            cpf = f"{cpf}".zfill(11)
+            print(cpf)
+            self.txtCodigo.insert(0, cpf )
+            self.txtNome.insert(0, Nome)
+
+            self.fLimparTela2() 
+            if (len(cpf) == 11):
+                self.treePerfil.delete(*self.treePerfil.get_children())
+                self.id2 = 0
+                self.iid2 = 0
+                registros2 = self.objBD2.Obter_registros_CPF(cpf)
+                print("************ dados dsponíveis no BD PerfilUsuario ***********")        
+                for item2 in registros2:
+                    #cpf=item[0]
+                    codigo2=item2[0]
+                    codigo2 = f"{codigo2}".zfill(3)
+                    perfil=item2[1]
+                    print("Cpf = ", cpf)
+                    print("Código = ", codigo2)
+                    print("Função = ", perfil, "\n")
+                    
+                            
+                    self.treePerfil.insert('', 'end',
+                                        iid=self.iid2,                                  
+                                        values=(codigo2,
+                                                perfil,))                        
+                    self.iid2 = self.iid2 + 1
+                    self.id2 = self.id2 + 1
+            print('Dados da Base')
+        # for selection in self.treePerfil.selection():  
+        #     item = self.treePerfil.item(selection)  
+            
+        #     codigo2, perfil = item["values"][0:2]
+        #     codigo2 = f"{codigo2}".zfill(3)
+             
+            
+        #     print(codigo2)
+        #     print(perfil)
+            
+        #     self.txtCodigo2.insert(0, codigo2) 
+        #     self.txtPerfil.insert(0, perfil)     
+        
+        #     print(cpf)
+        #     self.txtCodigo.insert(0, cpf) 
+            
+                  
+
+#-----------------------------------------------------------------------------
+    def apresentarRegistrosSelecionados2(self, event):  
+        
+        self.fLimparTela2()
+
+        for selection in self.treePerfil.selection():  
+            item = self.treePerfil.item(selection)  
+            
+            codigo2, perfil = item["values"][0:2]
+            codigo2 = f"{codigo2}".zfill(3)
+             
+            
+            print(codigo2)
+            print(perfil)
+            
+            self.txtCodigo2.insert(0, codigo2) 
+            self.txtPerfil.insert(0, perfil)
+
+
 #-----------------------------------------------------------------------------
     def carregarDadosIniciais(self):
         try:
@@ -123,9 +239,10 @@ class TkUsuario:
           print("************ dados dsponíveis no BD ***********")        
           for item in registros:
               cpf=item[0]
+              cpf = f"{cpf}".zfill(11)
               nome=item[1]
               
-              print("Código = ", cpf)
+              print("Cpf = ", cpf)
               print("Nome = ", nome, "\n")
               
                         
@@ -135,16 +252,53 @@ class TkUsuario:
                                            nome,))                        
               self.iid = self.iid + 1
               self.id = self.id + 1
+
+              
+
+
           print('Dados da Base')        
         except:
           print('Ainda não existem dados para carregar')            
 #-----------------------------------------------------------------------------
-#LerDados da Tela
+
+
+    # def carregarDadosIniciais2(self):
+    #         try:
+    #           self.id = 0
+    #           self.iid = 0
+    #           cpf, nome = self.fLerCampos()
+    #           cpf = f"{cpf}".zfill(11)
+                       
+    #           registros = self.objBD2.Obter_registros_CPF(cpf)
+              
+    #           print("************ dados dsponíveis no BD ***********")        
+    #           for item in registros:
+    #               #cpf=item[0]
+    #               codigo2=item[0]
+    #               codigo2 = f"{codigo2}".zfill(3)
+    #               perfil=item[1]
+    #               print("Cpf = ", cpf)
+    #               print("Código = ", codigo2)
+    #               print("Função = ", perfil, "\n")
+                  
+                           
+    #               self.treePerfil.insert('', 'end',
+    #                                   iid=self.iid2,                                  
+    #                                   values=(codigo2,
+    #                                           perfil,))                        
+    #               self.iid2 = self.iid2 + 1
+    #               self.id2 = self.id2 + 1
+    #           print('Dados da Base')        
+    #         except:
+    #           print('Ainda não existem dados para carregar')  
+
+
+#LerDados da Tela 
 #-----------------------------------------------------------------------------           
     def fLerCampos(self):
         try:
           print("************ dados dsponíveis ***********") 
-          cpf = (self.txtCodigo.get())
+          cpf = str(self.txtCodigo.get())
           print('cpf', cpf)
           nome=self.txtNome.get()
           print('nome', nome)
@@ -154,31 +308,83 @@ class TkUsuario:
         except:
           print('Não foi possível ler os dados.')
         return cpf, nome
-    
+
+
+
+
+#LerDados da Tela 2
+#-----------------------------------------------------------------------------           
+    def fLerCampos2(self):
+        try:
+          print("************ dados dsponíveis ***********") 
+          
+          
+          codigo2 = str(self.txtCodigo2.get())
+          print('Cod. Sis.', codigo2)
+          perfil= self.txtPerfil.get()
+          print('Função', perfil)
+        #   preco= str(self.txtPreco.get())          
+        #   print('preco', preco)
+          print('Leitura dos Dados com Sucesso!')        
+        except:
+          print('Não foi possível ler os dados.')
+        return codigo2, perfil
+
 
 
 #-----------------------------------------------------------------------------
-#Cadastrar Produto
+#Cadastrar Usuario
 #-----------------------------------------------------------------------------           
     def fCadastrarProduto(self):
         try:
           print("************ dados dsponíveis ***********") 
-          cpf, nome= self.fLerCampos()                    
-          if (self.objBD.inserirDados(cpf, nome)):
-             
-            self.treeProdutos.insert('', 'end',
-                                  iid=self.iid,                                   
-                                  values=(cpf,
-                                          nome))                        
-            self.iid = self.iid + 1
-            self.id = self.id + 1
-            self.fLimparTela()
-            print('Produto Cadastrado com Sucesso!')        
+          cpf, nome= self.fLerCampos()
+
+          if len(cpf) == 11:
+            if (self.objBD.inserirDados(cpf, nome)):
+              
+              self.treeProdutos.insert('', 'end',
+                                    iid=self.iid,                                   
+                                    values=(cpf,
+                                            nome))                        
+              self.iid = self.iid + 1
+              self.id = self.id + 1
+              self.fLimparTela()
+              print('Produto Cadastrado com Sucesso!')        
 
           else:
+            messagebox.showerror(title= "CPF Inválido", message= "CPF deve conter 11 digitos númericos, sem o uso de pontos e/ou traços.")
             print('Não foi possível fazer o cadastro.')
         except:
           print('Não foi possível fazer o cadastro.')
+#-----------------------------------------------------------------------------
+
+
+    def fCadastrarPerfil(self):
+            try:
+              print("************ dados dsponíveis ***********") 
+              codigo2, perfil= self.fLerCampos2()
+              cpf, nome = self.fLerCampos()
+
+              
+              if (self.objBD2.inserirDados(cpf, codigo2, perfil)):
+                  
+                  self.treePerfil.insert('', 'end',
+                                        iid=self.iid,                                   
+                                        values=(codigo2,
+                                                perfil))                        
+                  self.iid = self.iid + 1
+                  self.id = self.id + 1
+                  self.fLimparTela2()
+                  print('Produto Cadastrado com Sucesso!')        
+
+              else:
+                messagebox.showerror(title= "Código ou Perfil Inválido", message= """\n 
+O Codigo do Sistema ou do Perfil não condiz com os possíveis cadastros.\n 
+Confira na tabela apresentada na Aba 'CADASTRO DE PERFIS' as possíveis combinações""")
+                print('Não foi possível fazer o cadastro.')
+            except:
+              print('Não foi possível fazer o cadastro.')
 #-----------------------------------------------------------------------------
 #Atualizar Produto
 #-----------------------------------------------------------------------------           
@@ -197,12 +403,13 @@ class TkUsuario:
           print('Não foi possível fazer a atualização.')
           return False
 #-----------------------------------------------------------------------------
-#Excluir Produto
+#Excluir Usuario
 #-----------------------------------------------------------------------------                  
-    def fExcluirProduto(self):
+    def fExcluirUsuario(self):
         try:
           print("************ dados dsponíveis ***********")        
           cpf, nome= self.fLerCampos()
+          codigo2, perfil = self.fLerCampos2()
           self.objBD.excluirDados(cpf)          
           #recarregar dados na tela
           self.treeProdutos.delete(*self.treeProdutos.get_children()) 
@@ -212,6 +419,28 @@ class TkUsuario:
         except:
           print('Não foi possível fazer a exclusão do produto.')
 #-----------------------------------------------------------------------------
+
+
+#Excluir Usuario Perfil
+#-----------------------------------------------------------------------------                  
+    def fExcluirPerfil(self):
+        try:
+          print("************ dados dsponíveis ***********")
+          cpf, nome = self.fLerCampos()        
+          codigo2, perfil= self.fLerCampos2()
+          item_selecionado = self.treePerfil.selection()
+          self.objBD2.excluirDados(cpf, codigo2, perfil)     
+          #recarregar dados na tela
+
+          self.treePerfil.delete(item_selecionado) 
+          # self.carregarDadosIniciais()
+          self.fLimparTela2()
+          print('Perfil Excluído com Sucesso!')        
+        except:
+          print('Não foi possível fazer a exclusão do perfil.')
+#-----------------------------------------------------------------------------
+
+
 #Limpar Tela
 #-----------------------------------------------------------------------------                 
     def fLimparTela(self):
@@ -226,4 +455,15 @@ class TkUsuario:
 
 
 
+    def fLimparTela2(self):
+        try:
+          print("************ dados dsponíveis ***********")        
+          self.txtCodigo2.delete(0, tk.END)
+          self.txtPerfil.delete(0, tk.END)
+          
+          print('Campos Limpos!')        
+        except:
+          print('Não foi possível limpar os campos.')
+
+    
 

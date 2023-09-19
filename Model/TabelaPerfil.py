@@ -23,7 +23,8 @@ class TabelaPerfil:
                                 (
                                 Codigo INT NOT NULL,                                     
                                 Nome VARCHAR(30) NOT NULL,
-                                Descricao VARCHAR(200) NOT NULL  
+                                Descricao VARCHAR(200) NOT NULL,
+                                PRIMARY KEY (Codigo, Nome)  
                                 ); ''')  #Codigo INT PRIMARY KEY,  Preco NUMERIC CHECK(preco > 0) NOT NULL
             print('Tabela criada com sucesso!')
             self.conexao.commit()
@@ -88,23 +89,23 @@ class TabelaPerfil:
 
             print("Registro antes da atualização:")
             sql_select_query = ''' select * from public."PERFIS"
-                                    where Codigo = %s'''
-            cursor.execute(sql_select_query, (codigo,) )
+                                    where Nome = %s AND Codigo = %s'''
+            cursor.execute(sql_select_query, (nome, codigo) )
             record = cursor.fetchone()
             print(record)
 
             #Atualizar registro:
             sql_update_query = ''' Update public."PERFIS" set
-                                    Nome=%s, Descricao = %s where
-                                    Codigo = %s'''
-            cursor.execute(sql_update_query, (nome, descricao, codigo) )
+                                    Codigo=%s, Descricao = %s where
+                                    Nome = %s AND Codigo = %s'''
+            cursor.execute(sql_update_query, (codigo, descricao, nome, codigo) )
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro atualizado com sucesso')
             print('Registro depois da Atualização')
             sql_select_query = ''' select * from public."PERFIS"
-                                    where Codigo = %s'''
-            cursor.execute(sql_select_query, (codigo,) )
+                                    where Nome = %s'''
+            cursor.execute(sql_select_query, (nome,) )
             record = cursor.fetchone()
             print(record)   
             
@@ -120,14 +121,14 @@ class TabelaPerfil:
 
 
     
-    def excluirDados (self, codigo):
+    def excluirDados (self, nome, codigo):
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
             sql_delete_query = ''' DELETE from public."PERFIS"
-                                where Codigo = %s '''
+                                where Nome = %s AND Codigo = %s '''
             
-            cursor.execute(sql_delete_query, (codigo, ))
+            cursor.execute(sql_delete_query, (nome, codigo ))
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro excluido com sucesso!')

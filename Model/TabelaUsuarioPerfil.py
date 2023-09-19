@@ -2,7 +2,7 @@ import psycopg2
 
 
 
-class TabelaUsuario:
+class TabelaUsuarioPerfil:
     def __init__(self):
         print('Método Construtor')
 
@@ -19,31 +19,38 @@ class TabelaUsuario:
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()                 #Codigo SERIAL PRIMARY KEY,
-            cursor.execute(''' CREATE TABLE public."Usuario"
+            cursor.execute(''' CREATE TABLE public."UsuarioPerfil"
                                 (
-                                CPF char(11) CHECK(LENGTH(CPF) >= 11) PRIMARY KEY,                                     
-                                Nome VARCHAR(40) NOT NULL
-                                ); ''')  #Codigo INT PRIMARY KEY,  Preco NUMERIC CHECK(preco > 0) NOT NULL
-            
-            
-            print('Tabela criada com sucesso!')
+                                CPF char(11) CHECK(LENGTH(CPF) >= 11) ,                                     
+                                Codigo_Sistema INT NOT NULL,
+                                Funcao  VARCHAR(30) NOT NULL,
+                                PRIMARY KEY (CPF, Codigo_Sistema, Funcao),
+                                FOREIGN KEY (CPF) REFERENCES public."Usuario"(CPF) ON DELETE CASCADE ON UPDATE CASCADE,
+                                FOREIGN KEY (Codigo_Sistema, Funcao) REFERENCES public."PERFIS"(Codigo, Nome) ON DELETE CASCADE ON UPDATE CASCADE
+                                ); ''')
+            print('Tabela UsuarioPerfil criada com sucesso!')
             self.conexao.commit()
             self.conexao.close()
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
-                print("falha ao criar a tabela USUARIO")
+                print("falha ao criar a tabela USUARIOPerfil")
 
 
-    def selecionarDados(self):
+    def Obter_registros_CPF(self, cpf):
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
 
-            print("Selecionando todos os USUARIOS")
-            sql_select_query = '''select * from public."Usuario" '''
-
-            cursor.execute(sql_select_query)
+            print("Selecionando todos os perfis da quele usuário")
+            sql_select_query = '''select Codigo_Sistema, Funcao FROM public."UsuarioPerfil"
+                                    WHERE CPF = %s '''
+            cpf = f"{cpf}".zfill(11)
+            print(cpf)
+            cursor.execute(sql_select_query, (cpf,) )
+            #record = cursor.fetchone()
+            
             registros = cursor.fetchall()
+            print("Registros de Perfil Usuário:", registros)
             return registros
             
         except (Exception, psycopg2.Error) as error:
@@ -57,21 +64,21 @@ class TabelaUsuario:
             print("A conexão com Banco de Dados foi fechada")
         return registros
     
-    def inserirDados(self, cpf, nome):  #Create
+    def inserirDados(self,cpf, codigo2, perfil):  #Create
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
-            postgres_insert_query = ''' INSERT INTO public."Usuario"
-                                    (CPF, Nome) VALUES (%s, %s) '''
-            record_to_insert = (cpf, nome)
+            postgres_insert_query = ''' INSERT INTO public."UsuarioPerfil"
+                                    (CPF, Codigo_Sistema, Funcao) VALUES (%s, %s, %s) '''
+            record_to_insert = (cpf, codigo2, perfil)
             cursor.execute(postgres_insert_query, record_to_insert)
             self.conexao.commit()
             count = cursor.rowcount
-            print(count,'Registro inserido com sucesso na tabela Usuario')
+            print(count,'Registro inserido com sucesso na tabela Usuario Perfil')
             return True
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
-                print("Falha ao inserir registro na tabela Usuario", error)
+                print("Falha ao inserir registro na tabela Usuario Perfil", error)
                 return False
         
         finally:
@@ -95,13 +102,13 @@ class TabelaUsuario:
 
             #Atualizar registro:
             sql_update_query = ''' Update public."Usuario" SET
-                                    Nome=%s where CPF = %s '''
+                                    Nome=%s where CPF = %s'''
             cursor.execute(sql_update_query, (nome, cpf))
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro atualizado com sucesso')
             print('Registro depois da Atualização')
-            sql_select_query = ''' select * from public."Usuario"
+            sql_select_query = ''' select * from public."UsuarioPerfil"
                                     where CPF = %s'''
             cursor.execute(sql_select_query, (cpf,) )
             record = cursor.fetchone()
@@ -119,14 +126,14 @@ class TabelaUsuario:
 
 
     
-    def excluirDados (self, cpf):
+    def excluirDados (self, cpf, codigo2, perfil):
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
-            sql_delete_query = ''' DELETE from public."Usuario"
-                                where CPF = %s '''
+            sql_delete_query = ''' DELETE from public."UsuarioPerfil"
+                                where CPF= %s AND Codigo_Sistema = %s AND Funcao = %s '''
             
-            cursor.execute(sql_delete_query, (cpf,))
+            cursor.execute(sql_delete_query, (cpf, codigo2, perfil))
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro excluido com sucesso!')
@@ -141,20 +148,7 @@ class TabelaUsuario:
                 print('A conexão foi encerrada com sucesso!')    
 
 
-#   Excluir Produto
-#-----------------------------------------------------------------------------                  
-    def fExcluirProduto(self):
-        try:
-          print("************ dados dsponíveis ***********")        
-          cpf, nome= self.fLerCampos()
-          self.objBD.excluirDados(cpf)          
-          #recarregar dados na tela
-          self.treeProdutos.delete(*self.treeProdutos.get_children()) 
-          self.carregarDadosIniciais()
-          self.fLimparTela()
-          print('Produto Excluído com Sucesso!')        
-        except:
-          print('Não foi possível fazer a exclusão do produto.')
+
 
 
 

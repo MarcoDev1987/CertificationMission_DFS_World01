@@ -1,5 +1,6 @@
 from Model.TabelaPerfil import TabelaPerfil as TbP
 from Model.TabelaUsuario import TabelaUsuario as TbU
+from Model.TabelaUsuarioPerfil import TabelaUsuarioPerfil as TbUP
 from Model.Loader import Loader
       #Package.Module        #Class
 import View.Sistema as Sistema
@@ -9,6 +10,7 @@ import View.Usuario as Usuario
 import View.MatrizSod as MatrizSod
 from View.TkInterPerfil import TkPerfil
 from View.TkInterUsuario import TkUsuario
+
 
 
 
@@ -23,6 +25,8 @@ class Controlador:
         self.BdP.CriarTabelas()
         self.BdU = TbU()
         self.BdU.CriarTabelas()
+        self.BdUP = TbUP()
+        self.BdUP.CriarTabelas()
 
     def run(self):
         #Carregar todos os arquivos csv
@@ -120,8 +124,9 @@ class Controlador:
         nb.add(tb2,text="Cadastro de Perfis")
 
 
-        TkUsuario(tb1, self)
+        
         TkPerfil(tb2, self)
+        TkUsuario(tb1, self)
         
         # janela2=tk.Tk()
         # PrincipalBD(janela2, self)

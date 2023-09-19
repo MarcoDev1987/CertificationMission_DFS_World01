@@ -1,5 +1,6 @@
 
 import tkinter as tk
+from tkinter import messagebox, StringVar
 from tkinter import ttk
 
 
@@ -7,12 +8,29 @@ class TkPerfil:
     def __init__(self, win, controller):
         controller.loader
         self.objBD = controller.BdP
+        self.objBD.CriarTabelas()
         #componentes
         self.lbCodigo=tk.Label(win, text='Código do Sistema:')
         self.lblNome=tk.Label(win, text='Nome do Perfil/Função')
         self.lblPreco=tk.Label(win, text='Descrição detalhada:')
 
-        self.txtCodigo=tk.Entry(win,)
+        
+        
+        def on_write(*args):
+          s = var.get()
+          if len(s) > 0:
+              if not s[-1].isdigit(): # retirar ultimo caracter caso nao seja digito
+                  var.set(s[:-1])
+              else: # aproveitar apenas os primeiros 5 chars
+                  var.set(s[:max_len])
+
+        
+        max_len = 3 # maximo num de caracteres
+        var = StringVar()
+        var.trace("w", on_write) # rastrear valor da variavel e executar funcao de validacao quando mudar
+
+        self.txtCodigo=tk.Entry(win, textvariable=var)
+        
         self.txtNome=tk.Entry(win,)
         self.txtPreco=tk.Entry(win,)
         
@@ -122,7 +140,7 @@ class TkPerfil:
     def fLerCampos(self):
         try:
           print("************ dados dsponíveis ***********") 
-          codigo = int(self.txtCodigo.get())
+          codigo = str(self.txtCodigo.get())
           print('codigo', codigo)
           nome=self.txtNome.get()
           print('nome', nome)
@@ -140,9 +158,10 @@ class TkPerfil:
 #-----------------------------------------------------------------------------           
     def fCadastrarProduto(self):
         try:
+          
           print("************ dados dsponíveis ***********") 
           codigo, nome, preco= self.fLerCampos()                    
-          if (self.objBD.inserirDados(codigo, nome, preco)):
+          if (len(codigo) == 3 and self.objBD.inserirDados(codigo, nome, preco)):
              
             self.treeProdutos.insert('', 'end',
                                   iid=self.iid,                                   
@@ -155,6 +174,7 @@ class TkPerfil:
             print('Produto Cadastrado com Sucesso!')        
 
           else:
+            messagebox.showerror(title= "Código com número incorreto de digitos", message= "O Código do Sistema deve haver ter 3 digitos.")
             print('Não foi possível fazer o cadastro.')
         except:
           print('Não foi possível fazer o cadastro.')
@@ -182,7 +202,7 @@ class TkPerfil:
         try:
           print("************ dados dsponíveis ***********")        
           codigo, nome, preco= self.fLerCampos()
-          self.objBD.excluirDados(codigo)          
+          self.objBD.excluirDados(nome, codigo)          
           #recarregar dados na tela
           self.treeProdutos.delete(*self.treeProdutos.get_children()) 
           self.carregarDadosIniciais()
@@ -202,7 +222,6 @@ class TkPerfil:
           print('Campos Limpos!')        
         except:
           print('Não foi possível limpar os campos.')
-
 
 
 
