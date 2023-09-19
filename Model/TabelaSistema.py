@@ -2,7 +2,7 @@ import psycopg2
 
 
 
-class TabelaUsuarioPerfil:
+class TabelaSistema:
     def __init__(self):
         print('Método Construtor')
 
@@ -19,38 +19,31 @@ class TabelaUsuarioPerfil:
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()                 #Codigo SERIAL PRIMARY KEY,
-            cursor.execute(''' CREATE TABLE public."UsuarioPerfil"
+            cursor.execute(''' CREATE TABLE public."SISTEMAS"
                                 (
-                                CPF char(11) CHECK(LENGTH(CPF) >= 11),                                     
-                                Codigo_Sistema INT NOT NULL,
-                                Funcao  VARCHAR(30) NOT NULL,
-                                PRIMARY KEY (CPF, Codigo_Sistema, Funcao),
-                                FOREIGN KEY (CPF) REFERENCES public."Usuario"(CPF) ON DELETE CASCADE ON UPDATE CASCADE,
-                                FOREIGN KEY (Codigo_Sistema, Funcao) REFERENCES public."PERFIS"(Codigo, Nome) ON DELETE CASCADE ON UPDATE CASCADE
-                                ); ''')
-            print('Tabela UsuarioPerfil criada com sucesso!')
+                                Codigo INT CHECK (Codigo >= 100 AND Codigo <= 999),                                     
+                                Nome_Sistema VARCHAR(30) NOT NULL,
+                                PRIMARY KEY (Codigo)  
+                                ); ''')  #Codigo INT PRIMARY KEY,  Preco NUMERIC CHECK(preco > 0) NOT NULL
+            print('Tabela SISTEMAS criada com sucesso!')
             self.conexao.commit()
             self.conexao.close()
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
-                print("falha ao criar a tabela USUARIOPerfil")
+                print("falha ao criar a tabela PERFIS")
 
+   
 
-    def Obter_registros_CPF(self, cpf):
+    def selecionarDados(self):
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
 
-            print("Selecionando todos os perfis da quele usuário")
-            sql_select_query = '''select Codigo_Sistema, Funcao FROM public."UsuarioPerfil"
-                                    WHERE CPF = %s '''
-            cpf = f"{cpf}".zfill(11)
-            print(cpf)
-            cursor.execute(sql_select_query, (cpf,) )
-            #record = cursor.fetchone()
-            
+            print("Selecionando todos os SISTEMAS")
+            sql_select_query = '''select * from public."SISTEMAS" '''
+
+            cursor.execute(sql_select_query)
             registros = cursor.fetchall()
-            print("Registros de Perfil Usuário:", registros)
             return registros
             
         except (Exception, psycopg2.Error) as error:
@@ -64,22 +57,22 @@ class TabelaUsuarioPerfil:
             print("A conexão com Banco de Dados foi fechada")
         return registros
     
-    def inserirDados(self,cpf, codigo2, perfil):  #Create
+    def inserirDados(self, codigo, nome):  #Create
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
-            postgres_insert_query = ''' INSERT INTO public."UsuarioPerfil"
-                                    (CPF, Codigo_Sistema, Funcao) VALUES (%s, %s, %s) '''
-            record_to_insert = (cpf, codigo2, perfil)
+            postgres_insert_query = ''' INSERT INTO public."SISTEMAS"
+                                    (Codigo, Nome_Sistema ) VALUES (%s, %s) '''
+            record_to_insert = (codigo, nome)
             cursor.execute(postgres_insert_query, record_to_insert)
             self.conexao.commit()
             count = cursor.rowcount
-            print(count,'Registro inserido com sucesso na tabela Usuario Perfil')
-            return True
+            print(count,'Registro inserido com sucesso na tabela SISTEMAS')
+            return True, ''
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
-                print("Falha ao inserir registro na tabela Usuario Perfil", error)
-                return False
+                print("Falha ao inserir registro na tabela SISTEMAS", error)
+                return False, error
         
         finally:
             if(self.conexao):
@@ -88,35 +81,36 @@ class TabelaUsuarioPerfil:
                 print('A conexão foi encerrada com sucesso!')
 
     
-    def atualizarDados(self, cpf, nome): #Update
+    def atualizarDados(self, codigo, nome): #Update
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
 
             print("Registro antes da atualização:")
-            sql_select_query = ''' select * from public."Usuario"
-                                    where CPF = %s'''
-            cursor.execute(sql_select_query, (cpf,) )
+            sql_select_query = ''' select * from public."SISTEMAS"
+                                    where Codigo = %s'''
+            cursor.execute(sql_select_query, (codigo,) )
             record = cursor.fetchone()
             print(record)
 
             #Atualizar registro:
-            sql_update_query = ''' Update public."Usuario" SET
-                                    Nome=%s where CPF = %s'''
-            cursor.execute(sql_update_query, (nome, cpf))
+            sql_update_query = ''' Update public."SISTEMAS" set
+                                    Nome_Sistema=%s where
+                                    Codigo = %s'''
+            cursor.execute(sql_update_query, (nome, codigo) )
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro atualizado com sucesso')
             print('Registro depois da Atualização')
-            sql_select_query = ''' select * from public."UsuarioPerfil"
-                                    where CPF = %s'''
-            cursor.execute(sql_select_query, (cpf,) )
+            sql_select_query = ''' select * from public."SISTEMAS"
+                                    where Nome_Sistema = %s'''
+            cursor.execute(sql_select_query, (nome,) )
             record = cursor.fetchone()
             print(record)   
             
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
-                print("Falha ao inserir registro na tabela Usuario", error)
+                print("Falha ao inserir registro na tabela SISTEMAS", error)
         
         finally:
             if(self.conexao):
@@ -126,34 +120,23 @@ class TabelaUsuarioPerfil:
 
 
     
-    def excluirDados (self, cpf, codigo2, perfil):
+    def excluirDados (self, nome, codigo):
         try:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
-            sql_delete_query = ''' DELETE from public."UsuarioPerfil"
-                                where CPF= %s AND Codigo_Sistema = %s AND Funcao = %s '''
+            sql_delete_query = ''' DELETE from public."SISTEMAS"
+                                where Nome_Sistema = %s AND Codigo = %s '''
             
-            cursor.execute(sql_delete_query, (cpf, codigo2, perfil))
+            cursor.execute(sql_delete_query, (nome, codigo ))
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro excluido com sucesso!')
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
-                print("Erro de exclusão da tabela Usuario", error)
+                print("Erro de exclusão da tabela SISTEMAS", error)
         
         finally:
             if(self.conexao):
                 cursor.close()
                 self.conexao.close()
                 print('A conexão foi encerrada com sucesso!')    
-
-
-
-
-
-
-
-
-
-
-

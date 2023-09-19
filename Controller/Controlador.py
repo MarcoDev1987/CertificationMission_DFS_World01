@@ -1,3 +1,4 @@
+from Model.TabelaSistema import TabelaSistema as TbS
 from Model.TabelaPerfil import TabelaPerfil as TbP
 from Model.TabelaUsuario import TabelaUsuario as TbU
 from Model.TabelaUsuarioPerfil import TabelaUsuarioPerfil as TbUP
@@ -8,6 +9,7 @@ import View.Sistema as Sistema
 import View.Perfil as Perfil
 import View.Usuario as Usuario
 import View.MatrizSod as MatrizSod
+from View.TkInterSistema import TkSistema
 from View.TkInterPerfil import TkPerfil
 from View.TkInterUsuario import TkUsuario
 
@@ -21,6 +23,9 @@ class Controlador:
         self.lista_perfis = []
         self.lista_usuarios = []
         self.lista_matrizsod = []
+        self.BdS = TbS()
+        self.BdS.CriarTabelas()
+        
         self.BdP = TbP()
         self.BdP.CriarTabelas()
         self.BdU = TbU()
@@ -111,7 +116,7 @@ class Controlador:
 
         janela = tk.Tk()
         janela.title(" Missão Certificação:")
-        janela.geometry("720x600+10+10")
+        janela.geometry("1080x610+170+60")
         nb = ttk.Notebook(janela)
         nb.place(x=10,y=10, relwidth=0.98 , relheight=0.98)
         
@@ -119,19 +124,18 @@ class Controlador:
 
         tb1 = Frame(nb)
         tb2 = Frame(nb)
+        tb3 = Frame(nb)
 
-        nb.add(tb1,text="Cadastro de Usuários/Perfis")
-        nb.add(tb2,text="Cadastro de Perfis")
-
+        nb.add(tb1,text="  Cadastro de Usuários/Perfis   ")
+        nb.add(tb2,text="  Cadastro de Perfis            ")
+        nb.add(tb3,text="  Cadastro de Sistemas          ")
 
         
         TkPerfil(tb2, self)
         TkUsuario(tb1, self)
+        TkSistema(tb3, self)
         
-        # janela2=tk.Tk()
-        # PrincipalBD(janela2, self)
-        # janela2.title('PERFIS')
-        # janela2.geometry("720x600+10+10")
+        
 
         janela.mainloop()
 

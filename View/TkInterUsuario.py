@@ -64,6 +64,7 @@ class TkUsuario:
         self.btnLimpar=tk.Button(win, text='Limpar', command=self.fLimparTela)  
 
         self.btnCadastrarPS=tk.Button(win, text='Cadastrar Perfil/Sistema', command=self.fCadastrarPerfil)
+        self.btnLimpar2=tk.Button(win, text='Limpar', command=self.fLimparTela2)
         self.btnExcluirPS=tk.Button(win, text='Excluir Perfil/Sistema', command=self.fExcluirPerfil)
         
 
@@ -146,6 +147,7 @@ class TkUsuario:
         self.btnLimpar.place( x=260, y=450)
 
         self.btnCadastrarPS.place(relx= 0.60, y=450)
+        self.btnLimpar2.place( relx=0.75, y=450)
         self.btnExcluirPS.place(relx= 0.82, y=450)
     
 
@@ -193,22 +195,7 @@ class TkUsuario:
                     self.iid2 = self.iid2 + 1
                     self.id2 = self.id2 + 1
             print('Dados da Base')
-        # for selection in self.treePerfil.selection():  
-        #     item = self.treePerfil.item(selection)  
-            
-        #     codigo2, perfil = item["values"][0:2]
-        #     codigo2 = f"{codigo2}".zfill(3)
-             
-            
-        #     print(codigo2)
-        #     print(perfil)
-            
-        #     self.txtCodigo2.insert(0, codigo2) 
-        #     self.txtPerfil.insert(0, perfil)     
         
-        #     print(cpf)
-        #     self.txtCodigo.insert(0, cpf) 
-            
                   
 
 #-----------------------------------------------------------------------------
@@ -253,6 +240,27 @@ class TkUsuario:
               self.iid = self.iid + 1
               self.id = self.id + 1
 
+              self.treePerfil.delete(*self.treePerfil.get_children())
+              self.id2 = 0
+              self.iid2 = 0
+              registros2 = self.objBD2.Obter_registros_CPF(cpf)
+              print("************ dados dsponíveis no BD PerfilUsuario ***********")        
+              for item2 in registros2:
+                #cpf=item[0]
+                codigo2=item2[0]
+                codigo2 = f"{codigo2}".zfill(3)
+                perfil=item2[1]
+                print("Cpf = ", cpf)
+                print("Código = ", codigo2)
+                print("Função = ", perfil, "\n")
+                
+                        
+                self.treePerfil.insert('', 'end',
+                                    iid=self.iid2,                                  
+                                    values=(codigo2,
+                                            perfil,))                        
+                self.iid2 = self.iid2 + 1
+                self.id2 = self.id2 + 1
               
 
 
@@ -261,38 +269,28 @@ class TkUsuario:
           print('Ainda não existem dados para carregar')            
 #-----------------------------------------------------------------------------
 
-
-    # def carregarDadosIniciais2(self):
-    #         try:
-    #           self.id = 0
-    #           self.iid = 0
-    #           cpf, nome = self.fLerCampos()
-    #           cpf = f"{cpf}".zfill(11)
-                       
-    #           registros = self.objBD2.Obter_registros_CPF(cpf)
-              
-    #           print("************ dados dsponíveis no BD ***********")        
-    #           for item in registros:
-    #               #cpf=item[0]
-    #               codigo2=item[0]
-    #               codigo2 = f"{codigo2}".zfill(3)
-    #               perfil=item[1]
-    #               print("Cpf = ", cpf)
-    #               print("Código = ", codigo2)
-    #               print("Função = ", perfil, "\n")
-                  
-                           
-    #               self.treePerfil.insert('', 'end',
-    #                                   iid=self.iid2,                                  
-    #                                   values=(codigo2,
-    #                                           perfil,))                        
-    #               self.iid2 = self.iid2 + 1
-    #               self.id2 = self.id2 + 1
-    #           print('Dados da Base')        
-    #         except:
-    #           print('Ainda não existem dados para carregar')  
-
-
+    def carregarDadosIniciaisPerfil(self, cpf):
+      self.id2 = 0
+      self.iid2 = 0
+      registros2 = self.objBD2.Obter_registros_CPF(cpf)
+      print("************ dados dsponíveis no BD PerfilUsuario ***********")        
+      for item2 in registros2:
+        #cpf=item[0]
+        codigo2=item2[0]
+        codigo2 = f"{codigo2}".zfill(3)
+        perfil=item2[1]
+        print("Cpf = ", cpf)
+        print("Código = ", codigo2)
+        print("Função = ", perfil, "\n")
+        
+                
+        self.treePerfil.insert('', 'end',
+                            iid=self.iid2,                                  
+                            values=(codigo2,
+                                    perfil,))                        
+        self.iid2 = self.iid2 + 1
+        self.id2 = self.id2 + 1
+   
 #LerDados da Tela 
 #-----------------------------------------------------------------------------           
     def fLerCampos(self):
@@ -377,10 +375,12 @@ class TkUsuario:
                   self.id = self.id + 1
                   self.fLimparTela2()
                   print('Produto Cadastrado com Sucesso!')        
-
+                  self.treePerfil.delete(*self.treePerfil.get_children())
+                  self.carregarDadosIniciaisPerfil(cpf)
+                  
               else:
                 messagebox.showerror(title= "Código ou Perfil Inválido", message= """\n 
-O Codigo do Sistema ou do Perfil não condiz com os possíveis cadastros.\n 
+O Codigo do Sistema ou o Perfil não estão de acordo com os possíveis cadastros.\n 
 Confira na tabela apresentada na Aba 'CADASTRO DE PERFIS' as possíveis combinações""")
                 print('Não foi possível fazer o cadastro.')
             except:

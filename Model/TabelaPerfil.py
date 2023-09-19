@@ -24,7 +24,8 @@ class TabelaPerfil:
                                 Codigo INT NOT NULL,                                     
                                 Nome VARCHAR(30) NOT NULL,
                                 Descricao VARCHAR(200) NOT NULL,
-                                PRIMARY KEY (Codigo, Nome)  
+                                PRIMARY KEY (Codigo, Nome),
+                                FOREIGN KEY (Codigo) REFERENCES public."SISTEMAS"(Codigo) ON DELETE CASCADE ON UPDATE CASCADE  
                                 ); ''')  #Codigo INT PRIMARY KEY,  Preco NUMERIC CHECK(preco > 0) NOT NULL
             print('Tabela criada com sucesso!')
             self.conexao.commit()
@@ -69,11 +70,11 @@ class TabelaPerfil:
             self.conexao.commit()
             count = cursor.rowcount
             print(count,'Registro inserido com sucesso na tabela Perfis')
-            return True
+            return True, ''
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
                 print("Falha ao inserir registro na tabela Perfis", error)
-                return False
+                return (False, error)
         
         finally:
             if(self.conexao):
