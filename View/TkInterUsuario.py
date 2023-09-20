@@ -1,4 +1,4 @@
-
+import pandas as pd
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
@@ -12,6 +12,7 @@ class TkUsuario:
         self.objBD.CriarTabelas()
         self.objBD2 = controller.BdUP
         self.objBD2.CriarTabelas()
+        self.objBD3 = controller.BdM
         
         #componentes
         self.lbCodigo=tk.Label(win, text='CPF(Pk):')
@@ -34,12 +35,12 @@ class TkUsuario:
                   var.set(s[:11])
 
         def on_write3(*args):
-          s = var.get()
+          s = var2.get()
           if len(s) > 0:
               if not s[-1].isdigit(): # retirar ultimo caracter caso nao seja digito
-                  var.set(s[:-1])
+                  var2.set(s[:-1])
               else: # aproveitar apenas os primeiros 5 chars
-                  var.set(s[:3])
+                  var2.set(s[:3])
         
         
         var = StringVar()
@@ -300,8 +301,7 @@ class TkUsuario:
           print('cpf', cpf)
           nome=self.txtNome.get()
           print('nome', nome)
-        #   preco= str(self.txtPreco.get())          
-        #   print('preco', preco)
+        
           print('Leitura dos Dados com Sucesso!')        
         except:
           print('Não foi possível ler os dados.')
@@ -321,8 +321,7 @@ class TkUsuario:
           print('Cod. Sis.', codigo2)
           perfil= self.txtPerfil.get()
           print('Função', perfil)
-        #   preco= str(self.txtPreco.get())          
-        #   print('preco', preco)
+        
           print('Leitura dos Dados com Sucesso!')        
         except:
           print('Não foi possível ler os dados.')
@@ -356,35 +355,120 @@ class TkUsuario:
         except:
           print('Não foi possível fazer o cadastro.')
 #-----------------------------------------------------------------------------
+    def frestricaoMatrizSod(self, cpf, codigo2, perfil):
+      
+      self.registros_usr = self.objBD2.Obter_registros_CPF(cpf)
+      dfU = pd.DataFrame.from_items(self.registros_usr)
+      
+      linhas_matriz = dfU.values.tolist()
+      
+      self.registros_matriz = self.objBD3.selecionarDados()
+      dfM = pd.DataFrame.from_tems(self.registros_matris)
+      cadastros = dfM.values.tolist()
+      
+      # cadastros = list(map(str,cadastros))
+      # restricoesM = list(map(str, restricoesM))
+      print("Registro da matriz", linhas_matriz)
+      print("Registro do usr", cadastros[1])
+      print(codigo2)
+      print(perfil)
+
+      passagem = 0
+
+      for cadastro in cadastros:
+        for line in linhas_matriz:
+          if (line[1] == '' and cadastro in line and codigo2 in line):
+              print("Restricao de Sistemas", line)
+              passagem = 1
+              motivo = 'os setores'
+              resposta = f'o setor de código {cadastro[0]}'
+              registro = line
+              break
+          if( cadastro[0] in line and cadastro[1] in line and  codigo2 in line and perfil in line):
+              print("Restricao de Perfis", line)
+              passagem = 1
+              motivo = 'as funções'
+              resposta = f' a função ({cadastro[1]}) de código {cadastro[0]}'
+              registro = line
+              break
+
+      if passagem == 0:
+          print("Não foi encontrado restriçao")
+          return True
+
+      else:
+        messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Registro na MatrizSOD:{registro}\nFoi encontrado restrição no registro de ({perfil}) de código {codigo2}. \nRestrição entre {motivo} da empresa. \nO conflito é entre {resposta} cadastrado previamente para este funcionário.')
+        return False
+
 
 
     def fCadastrarPerfil(self):
-            try:
-              print("************ dados dsponíveis ***********") 
-              codigo2, perfil= self.fLerCampos2()
-              cpf, nome = self.fLerCampos()
+      try:
+        print("************ dados dsponíveis ***********") 
+        codigo2, perfil= self.fLerCampos2()
+        cpf, nome = self.fLerCampos()
+        self.registros_usr = self.objBD2.Obter_registros_CPF(cpf)
+        cadastros = list(map(list,self.registros_usr))
+      
+        
+      
+        self.registros_matriz = self.objBD3.selecionarDados()
+        linhas_matriz = list(map( list,self.registros_matriz))
+        print("Registro da matriz", linhas_matriz)
+        print("Registro do usr", cadastros)
+        print(codigo2)
+        print(perfil)
+        codigo2 = int(codigo2)
+        passagem = 0
 
-              
-              if (self.objBD2.inserirDados(cpf, codigo2, perfil)):
-                  
-                  self.treePerfil.insert('', 'end',
-                                        iid=self.iid,                                   
-                                        values=(codigo2,
-                                                perfil))                        
-                  self.iid = self.iid + 1
-                  self.id = self.id + 1
-                  self.fLimparTela2()
-                  print('Produto Cadastrado com Sucesso!')        
-                  self.treePerfil.delete(*self.treePerfil.get_children())
-                  self.carregarDadosIniciaisPerfil(cpf)
-                  
-              else:
-                messagebox.showerror(title= "Código ou Perfil Inválido", message= """\n 
-O Codigo do Sistema ou o Perfil não estão de acordo com os possíveis cadastros.\n 
-Confira na tabela apresentada na Aba 'CADASTRO DE PERFIS' as possíveis combinações""")
-                print('Não foi possível fazer o cadastro.')
-            except:
+
+        for line in linhas_matriz:
+          for cadastro in cadastros:
+            
+            print(cadastro[0])
+            if ( cadastro[0] in line and '' in line and codigo2 in line) :
+                print("Restricao de Sistemas", line)
+                passagem = 1
+                motivo = 'os setores'
+                resposta = f'o setor de código {cadastro[0]}'
+                registro = line
+                break
+            if(cadastro[1] in line and perfil in line):
+                print("Restricao de Perfis", line)
+                passagem = 1
+                motivo = 'as funções'
+                resposta = f' a função ({cadastro[1]}) de código {cadastro[0]}'
+                registro = line
+                break
+
+        if passagem == 0:
+            if ( self.objBD2.inserirDados(cpf, codigo2, perfil)):
+              self.treePerfil.insert('', 'end',
+                                  iid=self.iid,                                   
+                                  values=(codigo2,
+                                          perfil))                        
+              self.iid = self.iid + 1
+              self.id = self.id + 1
+              self.fLimparTela2()
+              print('Produto Cadastrado com Sucesso!')        
+              self.treePerfil.delete(*self.treePerfil.get_children())
+              self.carregarDadosIniciaisPerfil(cpf)
+            
+            else:
+              messagebox.showerror(title= "Código ou Perfil Inválido", message= """\n 
+              O Codigo do Sistema ou o Perfil não estão de acordo com os possíveis cadastros.\n 
+              Confira na tabela apresentada na Aba 'CADASTRO DE PERFIS' as possíveis combinações""")
               print('Não foi possível fazer o cadastro.')
+
+        else:
+          messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Registro na MatrizSOD:{registro}\nFoi encontrado restrição no registro de ({perfil}) de código {codigo2}. \nRestrição entre {motivo} da empresa. \nO conflito é entre {resposta} cadastrado previamente para este funcionário.')
+          
+
+
+      except:
+        print('Não foi possível fazer o cadastro.')
+
+
 #-----------------------------------------------------------------------------
 #Atualizar Produto
 #-----------------------------------------------------------------------------           

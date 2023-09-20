@@ -84,10 +84,10 @@ class TkSistema:
                                         
         
         self.lbCodigo.place( x=100, y=325)
-        self.txtCodigo.place( x=250, y=325)
+        self.txtCodigo.place( x=250, y=325, relwidth= 0.25, relheight= 0.04 )
         
         self.lblNome.place( x=100, y=375)
-        self.txtNome.place( x=250, y=375)
+        self.txtNome.place( x=250, y=375, relwidth= 0.25, relheight= 0.04)
         
         
                

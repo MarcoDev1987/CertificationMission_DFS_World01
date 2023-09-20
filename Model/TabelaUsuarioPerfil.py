@@ -26,7 +26,6 @@ class TabelaUsuarioPerfil:
                                 Funcao  VARCHAR(30) NOT NULL,
                                 PRIMARY KEY (CPF, Codigo_Sistema, Funcao),
                                 FOREIGN KEY (CPF) REFERENCES public."Usuario"(CPF) ON DELETE CASCADE ON UPDATE CASCADE,
-                                FOREIGN KEY (Codigo_Sistema, Funcao) REFERENCES public."PERFIS"(Codigo, Nome) ON DELETE CASCADE ON UPDATE CASCADE
                                 ); ''')
             print('Tabela UsuarioPerfil criada com sucesso!')
             self.conexao.commit()
@@ -41,7 +40,7 @@ class TabelaUsuarioPerfil:
             self.AbrirConexaoBD()
             cursor = self.conexao.cursor()
 
-            print("Selecionando todos os perfis da quele usuário")
+            print("Selecionando todos os perfis daquele usuário")
             sql_select_query = '''select Codigo_Sistema, Funcao FROM public."UsuarioPerfil"
                                     WHERE CPF = %s '''
             cpf = f"{cpf}".zfill(11)
@@ -61,7 +60,7 @@ class TabelaUsuarioPerfil:
             #closing database connection.
             cursor.close()
             self.conexao.close()
-            print("A conexão com Banco de Dados foi fechada")
+            print("A conexão com Banco de Dados foi fechada da MatrizSoD")
         return registros
     
     def inserirDados(self,cpf, codigo2, perfil):  #Create

@@ -1,39 +1,25 @@
 
 import tkinter as tk
-from tkinter import messagebox, StringVar
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 
-class TkPerfil:
+class TkMatrizsod:
     def __init__(self, win, controller):
         controller.loader
-        self.objBD = controller.BdP
+        self.objBD = controller.BdM
         self.objBD.CriarTabelas()
         #componentes
-        self.lbCodigo=tk.Label(win, text='Código do Sistema:')
-        self.lblNome=tk.Label(win, text='Nome do Perfil/Função')
-        self.lblPreco=tk.Label(win, text='Descrição detalhada:')
+        self.lblSistemaA=tk.Label(win, text='Sistema A:')
+        self.lblPerfilA=tk.Label(win, text='Perfil A')
+        self.lblSistemaB=tk.Label(win, text='Sistema B:')
+        self.lblPerfilB=tk.Label(win, text='Perfil B:')
+        
 
-        
-        
-        def on_write(*args):
-          s = var.get()
-          if len(s) > 0:
-              if not s[-1].isdigit(): # retirar ultimo caracter caso nao seja digito
-                  var.set(s[:-1])
-              else: # aproveitar apenas os primeiros 5 chars
-                  var.set(s[:max_len])
-
-        
-        max_len = 3 # maximo num de caracteres
-        var = StringVar()
-        var.trace("w", on_write) # rastrear valor da variavel e executar funcao de validacao quando mudar
-
-        self.txtCodigo=tk.Entry(win, textvariable=var)
-        
-        self.txtNome=tk.Entry(win,)
-        self.txtPreco=tk.Entry(win,)
-        
+        self.txtSistemaA=tk.Entry(win,)
+        self.txtPerfilA=tk.Entry(win,)
+        self.txtSistemaB=tk.Entry(win,)
+        self.txtPerfilB=tk.Entry(win,)
+       
 
         self.btnCadastrar=tk.Button(win, text='Cadastrar', command=self.fCadastrarProduto)        
         self.btnAtualizar=tk.Button(win, text='Atualizar', command=self.fAtualizarProduto)        
@@ -47,8 +33,8 @@ class TkPerfil:
 
 
         #----- Componente TreeView --------------------------------------------
-        # self.dadosColunas = ("Código", "Nome", "Preço")
-        self.dadosColunas = ("", "Codigo do Sistema(Fk)", "Nome(Pk)", "Descrição detalhada")            
+        # self.dadosColunas = ("Sistema A", "Perfil A", "Sistema B", "Perfil B")
+        self.dadosColunas = ("", "Sistema A", "Perfil A", "Sistema B","Perfil B")            
                 
         self.treeProdutos = ttk.Treeview(win, height= 4, 
                                        columns=self.dadosColunas,
@@ -62,16 +48,17 @@ class TkPerfil:
         #self.treeProdutos.configure(yscrollcommand=self.verscrlbar.set)
         
         self.treeProdutos.heading("#0", text="")
-        self.treeProdutos.heading("#1", text="Codigo do Sistema(Fk)")
-        self.treeProdutos.heading("#2", text="Nome(Pk)")
-        self.treeProdutos.heading("#3", text="Descrição detalhada")        
-
-        self.treeProdutos.column("#0", width= 1)
-        self.treeProdutos.column("#1", width= 200)
-        self.treeProdutos.column("#2", width=200)
-        self.treeProdutos.column("#3", width= 300)
+        self.treeProdutos.heading("#1", text="Sistema A")
+        self.treeProdutos.heading("#2", text="Perfil A")
+        self.treeProdutos.heading("#3", text="Sistema B")
+        self.treeProdutos.heading("#4", text="Perfil B")
         
-
+        self.treeProdutos.column("#0", width= 1)
+        self.treeProdutos.column("#1", width= 150)
+        self.treeProdutos.column("#2", width=150)
+        self.treeProdutos.column("#3", width= 150)
+        self.treeProdutos.column("#4", width= 150)
+        
         self.treeProdutos.pack(padx=10, pady=10)
         
         
@@ -80,23 +67,28 @@ class TkPerfil:
         #---------------------------------------------------------------------        
         #posicionamento dos componentes na janela
         #---------------------------------------------------------------------                
-        self.treeProdutos.place(relx = 0.02 , rely = 0.1, relwidth= 0.95, relheight= 0.45)
+        self.treeProdutos.place(relx = 0.02 , rely = 0.05, relwidth= 0.95, relheight= 0.45)
         self.verscrlbar.place( relwidth= 0.98, rely=50, relheight= 0.45)     
                                         
         
-        self.lbCodigo.place( x=100, y=325)
-        self.txtCodigo.place( x=250, y=325, relheight= 0.05)
+        self.lblSistemaA.place( x=100, y=325)
+        self.txtSistemaA.place( x=250, y=325, relwidth= 0.50, relheight= 0.05)
         
-        self.lblNome.place( x=100, y=375)
-        self.txtNome.place( x=250, y=375, relwidth= 0.30, relheight= 0.05)
+        self.lblPerfilA.place( x=100, y=375)
+        self.txtPerfilA.place( x=250, y=375, relwidth= 0.50, relheight= 0.05)
         
-        self.lblPreco.place( x=100, y=425)
-        self.txtPreco.place(x=250, y=425, relwidth= 0.50, relheight= 0.05)
+        self.lblSistemaB.place( x=100, y=425)
+        self.txtSistemaB.place(x=250, y=425, relwidth= 0.50, relheight= 0.05)
+
+        self.lblPerfilB.place( x=100, y=475)
+        self.txtPerfilB.place(x=250, y=475, relwidth= 0.50, relheight= 0.05)
+
+        
                
-        self.btnCadastrar.place( x=100, y=500)
-        self.btnAtualizar.place( x=200, y=500)
-        self.btnExcluir.place( x=300, y=500)
-        self.btnLimpar.place( x=400, y=500)
+        self.btnCadastrar.place( x=100, y=520)
+        self.btnAtualizar.place( x=200, y=520)
+        self.btnExcluir.place( x=300, y=520)
+        self.btnLimpar.place( x=400, y=520)
                    
            
         self.carregarDadosIniciais()
@@ -105,10 +97,12 @@ class TkPerfil:
         self.fLimparTela()  
         for selection in self.treeProdutos.selection():  
             item = self.treeProdutos.item(selection)  
-            Codigo,Nome,Preco = item["values"][0:3]  
-            self.txtCodigo.insert(0, Codigo)  
-            self.txtNome.insert(0, Nome)  
-            self.txtPreco.insert(0, Preco)  
+            SistemaA,PerfilA,SistemaB, PerfilB = item["values"][0:4]  
+            self.txtSistemaA.insert(0, SistemaA)  
+            self.txtPerfilA.insert(0, PerfilA)  
+            self.txtSistemaB.insert(0, SistemaB)  
+            self.txtPerfilB.insert(0, PerfilB)
+            
 #-----------------------------------------------------------------------------
     def carregarDadosIniciais(self):
         try:
@@ -117,18 +111,23 @@ class TkPerfil:
           registros= self.objBD.selecionarDados()
           print("************ dados dsponíveis no BD ***********")        
           for item in registros:
-              codigo=item[0]
-              nome=item[1]
-              preco=item[2]
-              print("Código = ", codigo)
-              print("Nome = ", nome)
-              print("Preço  = ", preco, "\n")
-                        
+              SistemaA=item[0]
+              PerfilA=item[1]
+              SistemaB=item[2]
+              PerfilB=item[3]
+              
+              print("Sistema A = ", SistemaA)
+              print("Perfil A = ", PerfilA)
+              print("Sistema B  = ", SistemaB )
+              print("Perfil B  = ", PerfilB,"\n" )
+                                
               self.treeProdutos.insert('', 'end',
                                    iid=self.iid,                                   
-                                   values=(codigo,
-                                           nome,
-                                           preco))                        
+                                   values=(SistemaA,
+                                           PerfilA,
+                                           SistemaB,
+                                           PerfilB,
+                                          ))                        
               self.iid = self.iid + 1
               self.id = self.id + 1
           print('Dados da Base')        
@@ -140,16 +139,19 @@ class TkPerfil:
     def fLerCampos(self):
         try:
           print("************ dados dsponíveis ***********") 
-          codigo = str(self.txtCodigo.get())
-          print('codigo', codigo)
-          nome=self.txtNome.get()
-          print('nome', nome)
-          preco= str(self.txtPreco.get())          
-          print('preco', preco)
+          SistemaA = int(self.txtSistemaA.get())
+          print('Sistema A', SistemaA)
+          PerfilA=self.txtPerfilA.get()
+          print('Perfil A', PerfilA)
+          SistemaB= str(self.txtSistemaB.get())          
+          print('Sistema B', SistemaB)
+          PerfilB= str(self.txtPerfilB.get())          
+          print('Perfil B', PerfilB)
+         
           print('Leitura dos Dados com Sucesso!')        
         except:
           print('Não foi possível ler os dados.')
-        return codigo, nome, preco
+        return SistemaA, PerfilA, SistemaB, PerfilB
     
 
 
@@ -158,35 +160,31 @@ class TkPerfil:
 #-----------------------------------------------------------------------------           
     def fCadastrarProduto(self):
         try:
-          
           print("************ dados dsponíveis ***********") 
-          codigo, nome, descricao= self.fLerCampos()
-          if(len(codigo) < 3):
-            messagebox.showerror(title= "O Código do Sistema deve ser cadastrado com 3 digitos", message= "O Código do Sistema deve haver ter 3 digitos.")                     
-          if(len(nome) == 0 or len(descricao) == 0):
-            messagebox.showerror(title= "O Nome do Sistema deve ter pelo menos 1 caracter", message= "O Nome do Perfil e Descrição deve ter pelo menos 1 caracter.\n Revise o preenchimento dos campos.")
-                                           
-          else:
-            Erro = ""
-            Boolean, Erro = self.objBD.inserirDados(codigo, nome, descricao)                    
-            if (len(codigo) == 3 and Boolean):
-              
-              self.treeProdutos.insert('', 'end',
-                                    iid=self.iid,                                   
-                                    values=(codigo,
-                                            nome,
-                                            descricao))                        
-              self.iid = self.iid + 1
-              self.id = self.id + 1
-              self.fLimparTela()
-              print('Produto Cadastrado com Sucesso!')        
-            elif(Erro != ''):
-              messagebox.showerror (title= "O Código a ser usado deve primeiro ser cadastrado primeiro!", message= "O cadastro do perfil só é permitido respeitando o Código do Sistema já cadastrado na Aba (Cadastro de sistemas).") 
+          SistemaA, PerfilA, SistemaB, PerfilB= self.fLerCampos()
+          if (( SistemaA != "" and PerfilA != "" and SistemaB != "" and PerfilB != "") or (
+             PerfilA == "" and PerfilA == "") ):
+              Erro = ""
+              Boolean, Erro = self.objBD.inserirDados(SistemaA, PerfilA, SistemaB, PerfilB)                    
+              if (Boolean):
+                
+                self.treeProdutos.insert('', 'end',
+                                      iid=self.iid,                                   
+                                      values=(SistemaA,
+                                              PerfilA,
+                                              SistemaB,
+                                              PerfilB,
+                                              ))                        
+                self.iid = self.iid + 1
+                self.id = self.id + 1
+                self.fLimparTela()
+                print('Produto Cadastrado com Sucesso!')        
 
-            else:
-              messagebox.showerror(title= "Código com número incorreto de digitos", message= "O Código do Sistema deve haver ter 3 digitos.")
-              print('Não foi possível fazer o cadastro.')
+          else:
+            print('Não foi possível fazer o cadastro.')
+            messagebox.showerror (title= "Houve um erro ao fazer o cadastro da Matriz!", message= "Para o preenchimento correto da matriz Ou todos os campos devem ser preenchidos pois assim a segregação é entre Funções ou preencher somente os campos Sistemas pois assim se refere a segregação entre Sistemas")
         except:
+          messagebox.showerror (title= "Houve um erro ao cadastrar o Sistema!", message= f"{Erro}") 
           print('Não foi possível fazer o cadastro.')
 #-----------------------------------------------------------------------------
 #Atualizar Produto
@@ -194,9 +192,8 @@ class TkPerfil:
     def fAtualizarProduto(self):
         try:
           print("************ dados dsponíveis ***********")        
-          codigo, nome, preco= self.fLerCampos()
-          
-          self.objBD.atualizarDados(codigo, nome, preco)          
+          SistemaA, PerfilA, SistemaB, PerfilB= self.fLerCampos()
+          self.objBD.atualizarDados(SistemaA, PerfilA, SistemaB, PerfilB)          
           #recarregar dados na tela
           self.treeProdutos.delete(*self.treeProdutos.get_children()) 
           self.carregarDadosIniciais()
@@ -211,8 +208,9 @@ class TkPerfil:
     def fExcluirProduto(self):
         try:
           print("************ dados dsponíveis ***********")        
-          codigo, nome, preco= self.fLerCampos()
-          self.objBD.excluirDados(nome, codigo)          
+          SistemaA, PerfilA, SistemaB, PerfilB = self.fLerCampos()          
+          self.objBD.excluirDados(SistemaA, PerfilA, SistemaB, PerfilB)
+                    
           #recarregar dados na tela
           self.treeProdutos.delete(*self.treeProdutos.get_children()) 
           self.carregarDadosIniciais()
@@ -226,12 +224,13 @@ class TkPerfil:
     def fLimparTela(self):
         try:
           print("************ dados dsponíveis ***********")        
-          self.txtCodigo.delete(0, tk.END)
-          self.txtNome.delete(0, tk.END)
-          self.txtPreco.delete(0, tk.END)
+          self.txtSistemaA.delete(0, tk.END)
+          self.txtPerfilA.delete(0, tk.END)
+          self.txtSistemaB.delete(0, tk.END)
+          self.txtPerfilB.delete(0, tk.END)
+          
           print('Campos Limpos!')        
         except:
           print('Não foi possível limpar os campos.')
-
 
 

@@ -2,6 +2,7 @@ from Model.TabelaSistema import TabelaSistema as TbS
 from Model.TabelaPerfil import TabelaPerfil as TbP
 from Model.TabelaUsuario import TabelaUsuario as TbU
 from Model.TabelaUsuarioPerfil import TabelaUsuarioPerfil as TbUP
+from Model.TabelaMatrizSod import TabelaMatrizSod as TbM
 from Model.Loader import Loader
       #Package.Module        #Class
 import View.Sistema as Sistema
@@ -12,6 +13,7 @@ import View.MatrizSod as MatrizSod
 from View.TkInterSistema import TkSistema
 from View.TkInterPerfil import TkPerfil
 from View.TkInterUsuario import TkUsuario
+from View.TkMatrizsod import TkMatrizsod
 
 
 
@@ -23,15 +25,38 @@ class Controlador:
         self.lista_perfis = []
         self.lista_usuarios = []
         self.lista_matrizsod = []
-        self.BdS = TbS()
-        self.BdS.CriarTabelas()
-        
-        self.BdP = TbP()
-        self.BdP.CriarTabelas()
-        self.BdU = TbU()
-        self.BdU.CriarTabelas()
+        self.BdM = TbM()
+        self.BdS = TbS()        
+        self.BdP = TbP()        
+        self.BdU = TbU()        
         self.BdUP = TbUP()
-        self.BdUP.CriarTabelas()
+        
+    # def comparar_matrizsod(self, cpf, codigo2, perfil):
+        
+    #         self.registros_usr = self.BdUP.Obter_registros_CPF(cpf)
+    #         self.registros_usr = list(self.registros_usr)
+    #         self.registros_matriz = self.BdM.selecionarDados()
+    #         self.registros_matriz = list(self.registros_matriz)
+    #         print(self.registros_matriz)
+    #         print(self.registros_usr)
+    #         condicao = 0
+    #         for registro in self.registros_usr:
+    #             for linha_matriz in self.registros_matriz:
+    #                 if (linha_matriz[1] == 0 and registro[1] in linha_matriz and codigo2 in linha_matriz) :  #Comparação entre Sistemas
+    #                     print("não é possível fazer o cadastro")
+    #                     condicao = 1
+    #                     #return False
+                        
+    #                 if (registro[1] in linha_matriz and registro[2] in linha_matriz and 
+    #                     codigo2 in linha_matriz and perfil in linha_matriz):
+    #                     print("não é possível fazer o cadastro")
+    #                     condicao = 1
+    #                     #return False
+                        
+    #         if condicao == 0:
+    #             #return True
+        
+
 
     def run(self):
         #Carregar todos os arquivos csv
@@ -98,10 +123,6 @@ class Controlador:
     # -------------------------- Carregamento do Banco de Dados  -----------------------------#    
         
         
-        
-        
-        
-        
 
 
 
@@ -125,15 +146,19 @@ class Controlador:
         tb1 = Frame(nb)
         tb2 = Frame(nb)
         tb3 = Frame(nb)
+        tb4 = Frame(nb)
 
         nb.add(tb1,text="  Cadastro de Usuários/Perfis   ")
         nb.add(tb2,text="  Cadastro de Perfis            ")
         nb.add(tb3,text="  Cadastro de Sistemas          ")
+        nb.add(tb4,text="  Cadastro da Matriz Sod        ")
 
         
         TkPerfil(tb2, self)
         TkUsuario(tb1, self)
         TkSistema(tb3, self)
+        TkMatrizsod(tb4, self)
+
         
         
 
