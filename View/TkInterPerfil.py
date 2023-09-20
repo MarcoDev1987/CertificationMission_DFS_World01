@@ -67,9 +67,9 @@ class TkPerfil:
         self.treeProdutos.heading("#3", text="Descrição detalhada")        
 
         self.treeProdutos.column("#0", width= 1)
-        self.treeProdutos.column("#1", width= 200)
-        self.treeProdutos.column("#2", width=200)
-        self.treeProdutos.column("#3", width= 300)
+        self.treeProdutos.column("#1", width= 250)
+        self.treeProdutos.column("#2", width=250)
+        self.treeProdutos.column("#3", width= 400)
         
 
         self.treeProdutos.pack(padx=10, pady=10)

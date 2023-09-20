@@ -66,8 +66,8 @@ class TkSistema:
         
 
         self.treeSistemas.column("#0", width= 1)
-        self.treeSistemas.column("#1", width= 200)
-        self.treeSistemas.column("#2", width=200)
+        self.treeSistemas.column("#1", width= 250)
+        self.treeSistemas.column("#2", width=250)
         
         
 

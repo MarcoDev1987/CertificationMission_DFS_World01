@@ -54,10 +54,10 @@ class TkMatrizsod:
         self.treeProdutos.heading("#4", text="Perfil B")
         
         self.treeProdutos.column("#0", width= 1)
-        self.treeProdutos.column("#1", width= 150)
-        self.treeProdutos.column("#2", width=150)
-        self.treeProdutos.column("#3", width= 150)
-        self.treeProdutos.column("#4", width= 150)
+        self.treeProdutos.column("#1", width= 220)
+        self.treeProdutos.column("#2", width=220)
+        self.treeProdutos.column("#3", width= 220)
+        self.treeProdutos.column("#4", width= 220)
         
         self.treeProdutos.pack(padx=10, pady=10)
         

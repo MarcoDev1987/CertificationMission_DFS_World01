@@ -96,22 +96,22 @@ class TkUsuario:
         self.treeProdutos.heading("#2", text="Nome")
         
 
-        self.treeProdutos.column("#0", width= 0)
-        self.treeProdutos.column("#1", width= 180)
-        self.treeProdutos.column("#2", width=180)
+        self.treeProdutos.column("#0", width= 1)
+        self.treeProdutos.column("#1", width= 230)
+        self.treeProdutos.column("#2", width=290)
         
         self.treePerfil = ttk.Treeview(win, height= 4, 
                                        columns=self.dadosColunas,
                                        selectmode='browse')
         
         self.treePerfil.heading("#0", text="")
-        self.treePerfil.heading("#1", text="Código Sis.")
+        self.treePerfil.heading("#1", text="Código Sistema")
         self.treePerfil.heading("#2", text="Função")
         
 
-        self.treePerfil.column("#0", width= 0)
-        self.treePerfil.column("#1", width= 150)
-        self.treePerfil.column("#2", width=150)
+        self.treePerfil.column("#0", width= 1)
+        self.treePerfil.column("#1", width= 200)
+        self.treePerfil.column("#2", width=200)
 
         self.treePerfil.bind("<<TreeviewSelect>>",
                                self.apresentarRegistrosSelecionados2)
@@ -381,14 +381,14 @@ class TkUsuario:
               print("Restricao de Sistemas", line)
               passagem = 1
               motivo = 'os setores'
-              resposta = f'o setor de código {cadastro[0]}'
+              resposta = f'O setor de código {cadastro[0]}'
               registro = line
               break
           if( cadastro[0] in line and cadastro[1] in line and  codigo2 in line and perfil in line):
               print("Restricao de Perfis", line)
               passagem = 1
               motivo = 'as funções'
-              resposta = f' a função ({cadastro[1]}) de código {cadastro[0]}'
+              resposta = f' A função ({cadastro[1]}) de código {cadastro[0]}'
               registro = line
               break
 
@@ -397,7 +397,7 @@ class TkUsuario:
           return True
 
       else:
-        messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Registro na MatrizSOD:{registro}\nFoi encontrado restrição no registro de ({perfil}) de código {codigo2}. \nRestrição entre {motivo} da empresa. \nO conflito é entre {resposta} cadastrado previamente para este funcionário.')
+        messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Restrição encontrada na MatrizSOD:       \n{registro}\n  Foi encontrado restrições no cadastro. \n \nO conflito é entre {motivo} e {resposta} está cadastrado previamente para este funcionário.')
         return False
 
 
@@ -429,14 +429,14 @@ class TkUsuario:
             if ( cadastro[0] in line and '' in line and codigo2 in line) :
                 print("Restricao de Sistemas", line)
                 passagem = 1
-                motivo = 'os setores'
+                motivo = 'setores'
                 resposta = f'o setor de código {cadastro[0]}'
                 registro = line
                 break
             if(cadastro[1] in line and perfil in line):
                 print("Restricao de Perfis", line)
                 passagem = 1
-                motivo = 'as funções'
+                motivo = 'funções'
                 resposta = f' a função ({cadastro[1]}) de código {cadastro[0]}'
                 registro = line
                 break
@@ -461,7 +461,7 @@ class TkUsuario:
               print('Não foi possível fazer o cadastro.')
 
         else:
-          messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Registro na MatrizSOD:{registro}\nFoi encontrado restrição no registro de ({perfil}) de código {codigo2}. \nRestrição entre {motivo} da empresa. \nO conflito é entre {resposta} cadastrado previamente para este funcionário.')
+          messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Restrição encontrada na MatrizSOD:          \n{registro}\n\n     Foi encontrado restrições no cadastro. \n  O conflito é entre {motivo} da empresa. {resposta} já está cadastrado previamente para este funcionário causando o conflito de interesses com o cadastro pretendido.')
           
 
 
