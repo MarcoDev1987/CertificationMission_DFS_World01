@@ -355,51 +355,6 @@ class TkUsuario:
         except:
           print('Não foi possível fazer o cadastro.')
 #-----------------------------------------------------------------------------
-    def frestricaoMatrizSod(self, cpf, codigo2, perfil):
-      
-      self.registros_usr = self.objBD2.Obter_registros_CPF(cpf)
-      dfU = pd.DataFrame.from_items(self.registros_usr)
-      
-      linhas_matriz = dfU.values.tolist()
-      
-      self.registros_matriz = self.objBD3.selecionarDados()
-      dfM = pd.DataFrame.from_tems(self.registros_matris)
-      cadastros = dfM.values.tolist()
-      
-      # cadastros = list(map(str,cadastros))
-      # restricoesM = list(map(str, restricoesM))
-      print("Registro da matriz", linhas_matriz)
-      print("Registro do usr", cadastros[1])
-      print(codigo2)
-      print(perfil)
-
-      passagem = 0
-
-      for cadastro in cadastros:
-        for line in linhas_matriz:
-          if (line[1] == '' and cadastro in line and codigo2 in line):
-              print("Restricao de Sistemas", line)
-              passagem = 1
-              motivo = 'os setores'
-              resposta = f'o setor de código {cadastro[0]}'
-              registro = line
-              break
-          if( cadastro[0] in line and cadastro[1] in line and  codigo2 in line and perfil in line):
-              print("Restricao de Perfis", line)
-              passagem = 1
-              motivo = 'as funções'
-              resposta = f' a função ({cadastro[1]}) de código {cadastro[0]}'
-              registro = line
-              break
-
-      if passagem == 0:
-          print("Não foi encontrado restriçao")
-          return True
-
-      else:
-        messagebox.showerror(title= "Restrição na Matriz SoD", message= f'Registro na MatrizSOD:{registro}\nFoi encontrado restrição no registro de ({perfil}) de código {codigo2}. \nRestrição entre {motivo} da empresa. \nO conflito é entre {resposta} cadastrado previamente para este funcionário.')
-        return False
-
 
 
     def fCadastrarPerfil(self):

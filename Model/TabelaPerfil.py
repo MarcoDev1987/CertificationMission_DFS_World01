@@ -47,7 +47,7 @@ class TabelaPerfil:
             cursor.execute(sql_select_query)
             registros = cursor.fetchall()
             return registros
-            print(registros)
+            
         except (Exception, psycopg2.Error) as error:
             if(self.conexao):
                 print("Error in select operation", error)
