@@ -14,7 +14,7 @@ psycopg2 e TkInter
 E a instalação de um SGBD para Banco de Dados (PostgreSQL) como o PgAdm4.
 
 # (3) Link do vídeo do funcionamento do sistema, de forma resumida:
-#    
+#    https://www.youtube.com/watch?v=aCo_WqCRni8&t=33s
 
 
 
